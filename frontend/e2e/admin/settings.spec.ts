@@ -5,10 +5,12 @@ import { expect, hydrated, test } from '../support/fixtures';
 interface Settings {
   tagline: string;
   announcement: string;
+  whatsapp: string;
   updatedAt: string;
 }
 
 let original: Pick<Settings, 'tagline' | 'announcement'> | null = null;
+let originalWhatsapp = '';
 
 test.describe('Configuración', () => {
   test.beforeAll(async () => {
@@ -16,6 +18,7 @@ test.describe('Configuración', () => {
     try {
       const s = await (await api.login()).get<Settings>('admin/settings');
       original = { tagline: s.tagline, announcement: s.announcement };
+      originalWhatsapp = s.whatsapp;
     } finally {
       await api.dispose();
     }
@@ -86,6 +89,37 @@ test.describe('Configuración', () => {
     const now = await (await api.login()).get<Settings>('admin/settings');
     await api.dispose();
     expect({ tagline: now.tagline, announcement: now.announcement }).toEqual(original);
+  });
+
+  test('el número de WhatsApp se configura en el panel y la tienda lo usa', async ({ page }) => {
+    const testNumber = '573009998877';
+    await page.goto('/admin/configuracion');
+    const save = page.getByRole('button', { name: 'Guardar configuración' });
+    await hydrated(save);
+    await page.getByLabel('WhatsApp').fill(testNumber);
+    await save.click();
+    await expect(page.getByText(/Configuración guardada/)).toBeVisible();
+
+    // El botón flotante de la tienda apunta al número nuevo tras la revalidación.
+    await expect(async () => {
+      await page.goto('/');
+      await expect(page.getByRole('link', { name: 'Escríbenos por WhatsApp' })).toHaveAttribute(
+        'href',
+        new RegExp(`^https://wa\\.me/${testNumber}\\?`),
+        { timeout: 2_000 },
+      );
+    }).toPass({ timeout: 30_000 });
+
+    // Restaurar desde la UI.
+    await page.goto('/admin/configuracion');
+    await hydrated(page.getByRole('button', { name: 'Guardar configuración' }));
+    await page.getByLabel('WhatsApp').fill(originalWhatsapp);
+    await page.getByRole('button', { name: 'Guardar configuración' }).click();
+    await expect(page.getByText(/Configuración guardada/)).toBeVisible();
+    const api = await BackendApi.create();
+    const now = await (await api.login()).get<Settings>('admin/settings');
+    await api.dispose();
+    expect(now.whatsapp).toBe(originalWhatsapp);
   });
 
   test('páginas de políticas: listado y editor (sin guardar)', async ({ page }) => {
