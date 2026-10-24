@@ -98,8 +98,8 @@ export function ProductsList() {
       className: 'text-right',
       cell: (p) => (
         <div>
-          <p className="font-medium">{formatCOP(p.price)}</p>
-          {p.compareAtPrice ? <p className="text-xs text-slate-400 line-through">{formatCOP(p.compareAtPrice)}</p> : null}
+          <p className="font-medium whitespace-nowrap">{formatCOP(p.price)}</p>
+          {p.compareAtPrice ? <p className="text-xs whitespace-nowrap text-slate-400 line-through">{formatCOP(p.compareAtPrice)}</p> : null}
         </div>
       ),
     },
