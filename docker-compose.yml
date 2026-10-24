@@ -1,0 +1,53 @@
+name: tecnobray-tienda
+
+# Servicios SOLO para pruebas e2e y desarrollo opcional con MinIO.
+# La base de datos de la tienda vive en Railway (ver README).
+#   docker compose --profile test up -d     → Postgres de pruebas + MinIO
+#   docker compose --profile minio up -d    → solo MinIO (alternativa local a AWS S3)
+
+services:
+  postgres:
+    profiles: ["test"]
+    image: postgres:16-alpine
+    container_name: tecnobray-tienda-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tecnobray
+      POSTGRES_PASSWORD: tecnobray_dev
+      POSTGRES_DB: tecnobray_tienda
+    ports:
+      - "55440:5432"
+    volumes:
+      - tecnobray_tienda_pgdata:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/01-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tecnobray -d tecnobray_tienda"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # MinIO (fork comunitario mantenido: pgsty/minio; las imágenes oficiales minio/minio
+  # dejaron de publicarse en Docker Hub). API S3 en 9010, consola en 9011.
+  minio:
+    profiles: ["test", "minio"]
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    container_name: tecnobray-tienda-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9011"
+    environment:
+      MINIO_ROOT_USER: tecnobray-dev
+      MINIO_ROOT_PASSWORD: tecnobray-dev-secret
+    ports:
+      - "9010:9000"
+      - "9011:9011"
+    volumes:
+      - tecnobray_tienda_minio:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9000/minio/health/live || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tecnobray_tienda_pgdata:
+  tecnobray_tienda_minio:

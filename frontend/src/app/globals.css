@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+/*
+ * Paleta TecnoBray (colores del logo). Los valores reales vienen de la configuración de la tienda
+ * (variables --brand-*, calculadas en app/layout.tsx); estos son los respaldos.
+ *   marino  #0B1E3F  → primario: botones, títulos destacados, navegación
+ *   marino  #071630  → secundario: barra de anuncio, pie, barra lateral del panel
+ *   lima    #84C43A  → acento: CTA de compra, insignias, resaltados (texto marino encima, 7.8:1)
+ *   verde   #4F7623  → acento como texto/enlace sobre blanco y fondos suaves (≥ 4.7:1) y anillos de foco
+ *   WhatsApp #25D366 → solo botones de WhatsApp, siempre con texto marino (8.3:1)
+ */
+:root {
+  --brand-primary: #0b1e3f;
+  --brand-primary-contrast: #ffffff;
+  --brand-secondary: #071630;
+  --brand-accent: #84c43a;
+  /* Texto sobre el acento: el layout lo calcula (blanco o tinta) según el contraste WCAG. */
+  --brand-accent-contrast: #0b1e3f;
+  /* Acento oscurecido para texto sobre blanco (el layout lo calcula para cumplir AA). */
+  --brand-accent-text: #4f7623;
+  --background: #f5f7fa;
+  --foreground: #0e1a2e;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@theme inline {
+  --color-brand: var(--brand-primary);
+  --color-on-brand: var(--brand-primary-contrast);
+  --color-brand-dark: color-mix(in oklab, var(--brand-primary) 80%, black);
+  --color-brand-soft: color-mix(in oklab, var(--brand-primary) 7%, white);
+  --color-ink: var(--brand-secondary);
+  --color-accent: var(--brand-accent);
+  --color-accent-dark: color-mix(in oklab, var(--brand-accent) 88%, black);
+  --color-on-accent: var(--brand-accent-contrast);
+  --color-accent-soft: color-mix(in oklab, var(--brand-accent) 14%, white);
+  --color-accent-text: var(--brand-accent-text);
+  /* WhatsApp: verde oficial con texto marino (blanco sobre #25D366 no cumple AA). */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-dark: #1ebe5b;
+  --color-on-whatsapp: #0b1e3f;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Gris de texto secundario un poco más oscuro (tinte frío) para cumplir AA sobre el fondo de página. */
+  --color-slate-500: #5b6779;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Contenido HTML de políticas y descripciones */
+.prose-store {
+  line-height: 1.7;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+.prose-store h1,
+.prose-store h2,
+.prose-store h3 {
+  color: var(--brand-primary);
+  font-weight: 700;
+  margin: 1.4em 0 0.5em;
+}
+.prose-store h2 {
+  font-size: 1.25rem;
+}
+.prose-store h3 {
+  font-size: 1.1rem;
+}
+.prose-store p {
+  margin: 0.75em 0;
+}
+.prose-store ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.75em 0;
+}
+.prose-store ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  margin: 0.75em 0;
+}
+.prose-store a {
+  color: var(--brand-accent-text);
+  text-decoration: underline;
+}
+
+/* Elementos fijos inferiores respetan el área segura (iPhone con barra de inicio). */
+.pb-safe {
+  padding-bottom: max(0.75rem, var(--safe-bottom));
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}

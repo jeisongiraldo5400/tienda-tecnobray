@@ -1,0 +1,36 @@
+# Proyecto independiente: este archivo solo existe para que pnpm trate `frontend/`
+# como raíz propia (lockfile propio, despliegue en Vercel con root directory `frontend`)
+# y para fijar la política de instalación. No declara paquetes compartidos.
+
+# Instalar solo versiones publicadas hace al menos 14 días (minutos).
+minimumReleaseAge: 20160
+
+# Excepciones de seguridad (parches de vulnerabilidades altas/críticas publicados hace < 14 días).
+# Se fija la versión parcheada MÁS ANTIGUA disponible. Retirar cuando cumplan 14 días.
+#  - next/eslint-config-next 16.4.1: RCE críticos en Image Optimization y `use cache` + DoS (<=16.4.0).
+#  - zod 4.6.6: agotamiento de memoria (high), dependencia transitiva de desarrollo (eslint-plugin-react-hooks).
+#  - undici 8.12.2: DoS por content-encodings (high) + 2 moderadas, dependencia de desarrollo (jsdom).
+minimumReleaseAgeExclude:
+  - next@16.4.1
+  - '@next/env@16.4.1'
+  - '@next/swc-darwin-arm64@16.4.1'
+  - '@next/swc-darwin-x64@16.4.1'
+  - '@next/swc-linux-arm64-gnu@16.4.1'
+  - '@next/swc-linux-arm64-musl@16.4.1'
+  - '@next/swc-linux-x64-gnu@16.4.1'
+  - '@next/swc-linux-x64-musl@16.4.1'
+  - '@next/swc-win32-arm64-msvc@16.4.1'
+  - '@next/swc-win32-x64-msvc@16.4.1'
+  - eslint-config-next@16.4.1
+  - '@next/eslint-plugin-next@16.4.1'
+  - zod@4.6.6
+  - undici@8.12.2
+
+overrides:
+  'zod@<4.6.6': 4.6.6
+  'undici@>=8.0.0 <8.12.2': 8.12.2
+
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+  "@parcel/watcher": false

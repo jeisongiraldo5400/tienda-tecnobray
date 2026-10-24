@@ -1,0 +1,26 @@
+# Proyecto independiente (no es un monorepo): este archivo solo guarda la
+# configuración de pnpm del backend.
+
+# Instalar solo versiones publicadas hace al menos 14 días (en minutos).
+minimumReleaseAge: 20160
+# Excepciones de seguridad: parches publicados hace menos de 14 días que corrigen
+# vulnerabilidades reportadas por `pnpm audit`.
+minimumReleaseAgeExclude:
+  - sanitize-html@2.18.1
+  - body-parser@2.4.0
+  - qs@6.16.1
+  - multer@2.5.0
+  - fast-uri@3.1.9
+
+overrides:
+  body-parser: 2.4.0
+  multer: 2.5.0
+  fast-uri: 3.1.9
+
+allowBuilds:
+  sharp: false
+  "@swc/core": false
+  unrs-resolver: false
+  "@nestjs/core": false
+  "@parcel/watcher": false
+  "@scarf/scarf": false
